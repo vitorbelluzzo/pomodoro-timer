@@ -11,7 +11,9 @@ import {
   StartCountdownButton,
   TaskInput,
 } from './styles'
+import { useState } from 'react'
 
+// variavel para validar os tipos dos inputs
 const newCycleFormValidationSchema = zod.object({
   task: zod.string().min(1, 'Informe a tarefa'),
   minutesAmount: zod
@@ -20,9 +22,18 @@ const newCycleFormValidationSchema = zod.object({
     .max(60, 'O Ciclo precisa ser de no máximo 60 minutos'),
 })
 
+// ao inves de uma interface, foi utilizado esse infer para gerar os tipos de dados
 type NewCycleFormData = zod.infer<typeof newCycleFormValidationSchema>
 
+interface Cycle {
+  id: string
+  task: string
+  minutesAmount: number
+}
+
 export function Home() {
+  const [cycles, setcycles] = useState<Cycle[]>([])
+  const [activeCycleId, setActiveCycleId] = useState<string | null>(null) // variavel para setar o ciclo ativo ou inativo, ele inicia como nulo
   const { register, handleSubmit, watch, reset } = useForm<NewCycleFormData>({
     resolver: zodResolver(newCycleFormValidationSchema),
     defaultValues: {
@@ -31,10 +42,22 @@ export function Home() {
     },
   })
 
+  // ao clicar em submit, ele chamara a função abaixo que entende os tipos de dados vindos do NewCycleFormData
   function handleCreateNewCycle(data: NewCycleFormData) {
-    console.log(data)
-    reset()
+    // é criado uma variavel chamado "newCycle", que utiliza a interface "Cycle" para saber os tipos dos dados
+    const newCycle: Cycle = {
+      id: String(new Date().getTime()), // id é gerado atraves do milisegundo da hora
+      task: data.task, // esse data vem do NewCycleFormData
+      minutesAmount: data.minutesAmount,
+    }
+    setActiveCycleId(newCycle.id) // aqui estou setando como ciclo ativo
+    setcycles((state) => [...state, newCycle]) // adiciona todos os ciclos ja criados e adiciona um novo ciclo
+    reset() // reseta os inputs
   }
+
+  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId) // variavel para checkar se na lista de cycles existe algum ciclo ativo atraves do id
+
+  console.log(activeCycle)
 
   const task = watch('task')
   const isSubmitDisabled = !task

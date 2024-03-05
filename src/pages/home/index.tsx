@@ -11,7 +11,8 @@ import {
   StartCountdownButton,
   TaskInput,
 } from './styles'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { differenceInSeconds } from 'date-fns'
 
 // variavel para validar os tipos dos inputs
 const newCycleFormValidationSchema = zod.object({
@@ -29,6 +30,7 @@ interface Cycle {
   id: string
   task: string
   minutesAmount: number
+  startDate: Date
 }
 
 export function Home() {
@@ -44,6 +46,19 @@ export function Home() {
     },
   })
 
+  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId) // variavel para checkar se na lista de cycles existe algum ciclo ativo atraves do id
+
+  useEffect(() => {
+    // toda alteração que a variavel "activeCycle" mudar, esse useffect ira ser acionado
+    if (activeCycle) {
+      setInterval(() => {
+        setAmountSecondsPassed(
+          differenceInSeconds(new Date(), activeCycle.startDate),
+        )
+      }, 1000)
+    }
+  }, [activeCycle])
+
   // ao clicar em submit, ele chamara a função abaixo que entende os tipos de dados vindos do NewCycleFormData
   function handleCreateNewCycle(data: NewCycleFormData) {
     // é criado uma variavel chamado "newCycle", que utiliza a interface "Cycle" para saber os tipos dos dados
@@ -51,13 +66,12 @@ export function Home() {
       id: String(new Date().getTime()), // id é gerado atraves do milisegundo da hora
       task: data.task, // esse data vem do NewCycleFormData
       minutesAmount: data.minutesAmount,
+      startDate: new Date(),
     }
     setActiveCycleId(newCycle.id) // aqui estou setando como ciclo ativo
     setcycles((state) => [...state, newCycle]) // adiciona todos os ciclos ja criados e adiciona um novo ciclo
     reset() // reseta os inputs
   }
-
-  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId) // variavel para checkar se na lista de cycles existe algum ciclo ativo atraves do id
 
   const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0 // variavel para caso o ciclo estiver ativo ele multiplica os minutos do ciclo por 60, se nao, ele é 0
   const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0 // variavel para caso o ciclo estiver ativo, ele subtrai o total de segundos menos a quantidade de segundos passada, se nao, ele é 0

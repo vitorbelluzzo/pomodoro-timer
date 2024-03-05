@@ -49,13 +49,18 @@ export function Home() {
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId) // variavel para checkar se na lista de cycles existe algum ciclo ativo atraves do id
 
   useEffect(() => {
+    let interval: number
     // toda alteração que a variavel "activeCycle" mudar, esse useffect ira ser acionado
     if (activeCycle) {
-      setInterval(() => {
+      interval = setInterval(() => {
         setAmountSecondsPassed(
           differenceInSeconds(new Date(), activeCycle.startDate),
         )
       }, 1000)
+    }
+
+    return () => {
+      clearInterval(interval)
     }
   }, [activeCycle])
 
@@ -70,6 +75,7 @@ export function Home() {
     }
     setActiveCycleId(newCycle.id) // aqui estou setando como ciclo ativo
     setcycles((state) => [...state, newCycle]) // adiciona todos os ciclos ja criados e adiciona um novo ciclo
+    setAmountSecondsPassed(0) // seta a quantidade de numeros ja passados pra zero
     reset() // reseta os inputs
   }
 
@@ -81,6 +87,13 @@ export function Home() {
 
   const minutes = String(minutesAmount).padStart(2, '0')
   const seconds = String(secondsAmount).padStart(2, '0')
+
+  useEffect(() => {
+    // esse useEffect serve para quando o ciclo estiver ativo, o titulo da pagina ter um contador tambem
+    if (activeCycle) {
+      document.title = `${minutes}:${seconds}`
+    }
+  }, [activeCycle, minutes, seconds])
 
   const task = watch('task')
   const isSubmitDisabled = !task

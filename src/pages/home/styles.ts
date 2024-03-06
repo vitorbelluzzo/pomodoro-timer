@@ -43,7 +43,7 @@ export const CountdownContainer = styled.div`
 
 export const Separator = styled.div`
   padding: 2rem 0;
-  color: ${(props) => props.theme['red-500']};
+  color: ${(props) => props.theme['green-500']};
 
   width: 4rem;
   overflow: hidden;
@@ -51,26 +51,18 @@ export const Separator = styled.div`
   justify-content: center;
 `
 
-export const StartCountdownButton = styled.button`
+export const BaseCountdownButton = styled.button`
   width: 100%;
   border: 0;
   padding: 1rem;
   border-radius: 8px;
-
+  color: ${(props) => props.theme['gray-100']};
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   font-weight: bold;
-
   cursor: pointer;
-
-  background: ${(props) => props.theme['red-500']};
-  color: ${(props) => props.theme['gray-100']};
-
-  &:not(:disabled):hover {
-    background: ${(props) => props.theme['red-700']};
-  }
 
   &:disabled {
     opacity: 0.7;
@@ -89,7 +81,7 @@ const BaseInput = styled.input`
 
   &:focus {
     box-shadow: none;
-    border-color: ${(props) => props.theme['red-500']};
+    border-color: ${(props) => props.theme['green-500']};
   }
 
   &::placeholder {
@@ -106,4 +98,20 @@ export const TaskInput = styled(BaseInput)`
 
 export const MinutesAmountInput = styled(BaseInput)`
   width: 4rem;
+`
+
+export const StartCountdownButton = styled(BaseCountdownButton)`
+  background: ${(props) => props.theme['green-700']};
+
+  &:not(:disabled):hover {
+    background: ${(props) => props.theme['green-500']};
+  }
+`
+
+export const StopCountdownButton = styled(BaseCountdownButton)`
+  background: ${(props) => props.theme['red-700']};
+
+  &:not(:disabled):hover {
+    background: ${(props) => props.theme['red-500']};
+  }
 `

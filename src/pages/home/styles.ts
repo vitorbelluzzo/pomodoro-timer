@@ -51,6 +51,16 @@ export const Separator = styled.div`
   justify-content: center;
 `
 
+export const ActiveSeparator = styled.div`
+  padding: 2rem 0;
+  color: ${(props) => props.theme['red-500']};
+
+  width: 4rem;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+`
+
 export const BaseCountdownButton = styled.button`
   width: 100%;
   border: 0;

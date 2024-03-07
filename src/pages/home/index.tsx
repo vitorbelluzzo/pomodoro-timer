@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as zod from 'zod'
 import {
+  ActiveSeparator,
   CountdownContainer,
   FormContainer,
   HomeContainer,
@@ -150,7 +151,11 @@ export function Home() {
         <CountdownContainer>
           <span>{minutes[0]}</span>
           <span>{minutes[1]}</span>
-          <Separator>:</Separator>
+          {activeCycle ? (
+            <ActiveSeparator>:</ActiveSeparator>
+          ) : (
+            <Separator>:</Separator>
+          )}
           <span>{seconds[0]}</span>
           <span>{seconds[1]}</span>
         </CountdownContainer>

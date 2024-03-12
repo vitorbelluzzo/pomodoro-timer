@@ -7,7 +7,7 @@ import {
   StartCountdownButton,
   StopCountdownButton,
 } from './styles'
-import { useEffect, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import { differenceInSeconds } from 'date-fns'
 import { NewCycleForm } from './components/newcycleform'
 import { Countdown } from './components/countdown'
@@ -33,6 +33,14 @@ interface Cycle {
   finishedDate?: Date
 }
 
+interface CyclesContextType {
+  activeCycle: Cycle | undefined
+  activeCycleId: string | null
+  markCurrentCycleAsFinished: () => void
+}
+
+export const CyclesContext = createContext({} as CyclesContextType)
+
 export function Home() {
   const [cycles, setcycles] = useState<Cycle[]>([])
   const [activeCycleId, setActiveCycleId] = useState<string | null>(null) // variavel para setar o ciclo ativo ou inativo, ele inicia como nulo
@@ -47,6 +55,20 @@ export function Home() {
   })
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId) // variavel para checkar se na lista de cycles existe algum ciclo ativo atraves do id
+
+  // criar uma nova função chamada markCycleAsFinished e copio o setcycle que esta no arquivo countdown e jogo dentro dessa função
+  function markCurrentCycleAsFinished() {
+    setcycles((state) =>
+      state.map((cycle) => {
+        if (cycle.id === activeCycleId) {
+          return { ...cycle, finishedDate: new Date() }
+        } else {
+          return cycle
+        }
+      }),
+    )
+  }
+
   const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0 // variavel para caso o ciclo estiver ativo ele multiplica os minutos do ciclo por 60, se nao, ele é 0
 
   useEffect(() => {
@@ -109,30 +131,19 @@ export function Home() {
     setActiveCycleId(null)
   }
 
-  const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0 // variavel para caso o ciclo estiver ativo, ele subtrai o total de segundos menos a quantidade de segundos passada, se nao, ele é 0
-
-  const minutesAmount = Math.floor(currentSeconds / 60)
-  const secondsAmount = currentSeconds % 60
-
-  const minutes = String(minutesAmount).padStart(2, '0')
-  const seconds = String(secondsAmount).padStart(2, '0')
-
-  useEffect(() => {
-    // esse useEffect serve para quando o ciclo estiver ativo, o titulo da pagina ter um contador tambem
-    if (activeCycle) {
-      document.title = `${minutes}:${seconds}`
-    }
-  }, [activeCycle, minutes, seconds])
-
   const task = watch('task')
   const isSubmitDisabled = !task
 
   return (
     <HomeContainer>
       <form onSubmit={handleSubmit(handleCreateNewCycle)} action="">
-        <NewCycleForm />
-        <Countdown />
+        <CyclesContext.Provider
+          value={{ activeCycle, activeCycleId, markCurrentCycleAsFinished }}
+        >
+          <NewCycleForm />
 
+          <Countdown />
+        </CyclesContext.Provider>
         {activeCycle ? (
           <StopCountdownButton onClick={handleInterruptCycle} type="button">
             <Pause size={24} />

@@ -63,10 +63,10 @@ export function CyclesContextProvider({
       minutesAmount: data.minutesAmount,
       startDate: new Date(),
     }
-    setActiveCycleId(newCycle.id) // aqui estou setando como ciclo ativo
+
     setcycles((state) => [...state, newCycle]) // adiciona todos os ciclos ja criados e adiciona um novo ciclo
+    setActiveCycleId(newCycle.id) // aqui estou setando como ciclo ativo
     setAmountSecondsPassed(0) // seta a quantidade de numeros ja passados pra zero
-    // reset() // reseta os inputs
   }
 
   function InterruptCurrentCycle() {

@@ -16,12 +16,13 @@ export function Countdown() {
 
   useEffect(() => {
     let interval: number
+
     // toda alteração que a variavel "activeCycle" mudar, esse useffect ira ser acionado
     if (activeCycle) {
-      interval = setInterval(() => {
+      const interval = setInterval(() => {
         const secondsDifference = differenceInSeconds(
           new Date(),
-          activeCycle.startDate,
+          new Date(activeCycle.startDate),
         )
         if (secondsDifference >= totalSeconds) {
           markCurrentCycleAsFinished()
